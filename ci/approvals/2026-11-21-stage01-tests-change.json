@@ -1,0 +1,14 @@
+{
+  "id": "2026-11-21-stage01-tests-change",
+  "kinds": ["test-change", "baseline-relax"],
+  "author": "agent",
+  "approvedBy": "user",
+  "approvedAt": "2026-11-21",
+  "expires": "2026-12-31",
+  "paths": [
+    "tests/store.test.mjs",
+    "tests/integration/host-api.test.mjs",
+    "ci/protected-tests.json"
+  ],
+  "reason": "stage-01 按 docs/research/13-契约决策记录.md 的 D2（工具面 2→5）与 D6（错误码收窄为 6 码 + reason）收口：受保护测试里把宿主工具数量钉为 2、把信封字段钉为 error 的断言已与新冻结契约冲突，必须随实现一起改，否则测试会锁死旧契约。批准人与实现者分离（approvedBy=user，author=agent）；修改只做「断言对齐新契约 + 补失败用例」，不删用例、不降覆盖率。同步刷新 ci/protected-tests.json 的哈希基线，使保护清单继续覆盖修改后的文件。"
+}

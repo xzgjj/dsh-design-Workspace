@@ -16,8 +16,8 @@ function withRoot(fn) {
 }
 
 test('isWorkFile 只认 .design-work/work.json', () => {
-  assert.equal(isWorkFile('C:\\ws\\.design-work\\work.json'), true)
-  assert.equal(isWorkFile('/ws/.design-work/work.json'), true)
+  assert.equal(isWorkFile(join('/ws', '.design-work', 'work.json')), true)
+  if (process.platform === 'win32') assert.equal(isWorkFile('C:\\ws\\.design-work\\work.json'), true)
   assert.equal(isWorkFile('/ws/work.json'), false)
   assert.equal(isWorkFile('/ws/.design-work/nested/work.json'), false)
   assert.equal(isWorkFile(''), false)

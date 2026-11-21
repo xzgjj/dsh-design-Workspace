@@ -1,11 +1,15 @@
 # 本地文档与私有笔记不随包发布，也不进版本库
-docs/
+# 唯一例外：测试契约 docs/testing.md，CI 需要它在仓库里
+docs/*
+!docs/testing.md
+assets/
 
 # 依赖与构建产物
 node_modules/
 dist/
 *.tgz
 *.log
+reports/
 
 # 运行期交付物（跟着用户项目走，不提交到插件仓）
 .design-work/

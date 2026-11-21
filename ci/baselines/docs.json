@@ -1,0 +1,297 @@
+{
+  "generatedAt": "2026-11-21T07:02:28.070Z",
+  "limit": {
+    "generalMaxBytes": 20480,
+    "contractMaxChars": 3000
+  },
+  "files": {
+    "AGENTS.md": {
+      "sha256": "b6f3370746b8082d5bc17ec6dcbd5acb9e63d6f39a7736750e796c33cf2098a0",
+      "chars": 779,
+      "bytes": 1581,
+      "kind": "general"
+    },
+    "CI.md": {
+      "sha256": "e428e4dd422d0a2b2ad34eb0c265c8c803ffcf5a99ccaec2a4c45c620acf4cd0",
+      "chars": 4129,
+      "bytes": 7786,
+      "kind": "general"
+    },
+    "README.md": {
+      "sha256": "20c241799df25cb2884768466b7f4b1e79d4d124fb467d30a85115190fd615a5",
+      "chars": 1308,
+      "bytes": 2630,
+      "kind": "general"
+    },
+    "docs/01-FROM-SCRATCH.md": {
+      "sha256": "0675bdde2b34f28082b0007b2cf8df665165554a8f7456462a1aa8073195a077",
+      "chars": 2848,
+      "bytes": 4612,
+      "kind": "general"
+    },
+    "docs/02-INTEGRATION.md": {
+      "sha256": "7949322a40192deaee3e67746e6a3564c94670a984f78fc4c3f3c82ac0633d15",
+      "chars": 2233,
+      "bytes": 3982,
+      "kind": "general"
+    },
+    "docs/03-MIGRATION-FROM-OLD.md": {
+      "sha256": "e54eba5076f56c0a54eed815abf1d1e8c1ca0ff8f2632908ee5f4cb265a35f23",
+      "chars": 2144,
+      "bytes": 3960,
+      "kind": "general"
+    },
+    "docs/04-NEW-IA.md": {
+      "sha256": "da31d1f8ab107f6453cda5ee4ee82846ee6a1486b94487c2d6291050ae61f31d",
+      "chars": 1654,
+      "bytes": 4583,
+      "kind": "general"
+    },
+    "docs/05-左上入口与宽版工作台首页.md": {
+      "sha256": "d71e38ef3f487186624e3047656444cb98be6eb395b26628a9809dce865a2419",
+      "chars": 9212,
+      "bytes": 17261,
+      "kind": "general"
+    },
+    "docs/SPEC-1_交付物与产物模型.md": {
+      "sha256": "71c277e440b500c598ec3978cc2e5c183b036fb45732c02a4faa2ec218560f8c",
+      "chars": 6656,
+      "bytes": 11022,
+      "kind": "contract"
+    },
+    "docs/SPEC-2_右栏画布与四条横带.md": {
+      "sha256": "47100b6ba8cb8aa31dbacd6b570c0697ee3557afa9d767d8554c8d0bd49fb7c2",
+      "chars": 4893,
+      "bytes": 9177,
+      "kind": "contract"
+    },
+    "docs/SPEC-3_预览导出与上一版.md": {
+      "sha256": "976e2f861696198453a84d30b68d65614903657f3f79d6d3a67b264417fa89d0",
+      "chars": 5352,
+      "bytes": 8904,
+      "kind": "contract"
+    },
+    "docs/SPEC-4_能力条与技能包装.md": {
+      "sha256": "3137a20af3cb47af136c30dc807421a16d820bdb1afeb41af24e07ed557e5012",
+      "chars": 4623,
+      "bytes": 8647,
+      "kind": "contract"
+    },
+    "docs/SPEC-5_点选改稿与对比体检.md": {
+      "sha256": "d705fa30dd43f4a46b53dc82dfda4b0afcdc06f4c46c3d30dc90cc280a5fdc53",
+      "chars": 3432,
+      "bytes": 6360,
+      "kind": "contract"
+    },
+    "docs/SPEC-6_四页签与首页创作页.md": {
+      "sha256": "35784dfdae67f1bb99d602bea4f82c69b67531714ea696ef46872599ad43fb5c",
+      "chars": 5367,
+      "bytes": 9840,
+      "kind": "contract"
+    },
+    "docs/SPEC-7_作品管理.md": {
+      "sha256": "a8a7a2a8f1d1700a2d46a0ee6dcdbb9ba03450e6b96740b2468b8533dc82a1de",
+      "chars": 2661,
+      "bytes": 4709,
+      "kind": "contract"
+    },
+    "docs/research/00-ALIGNMENT.md": {
+      "sha256": "60f5b9ebc0941d386f4b1b84dbf1bbd84b09358f4f416d30c54632e04a6583a0",
+      "chars": 2646,
+      "bytes": 6455,
+      "kind": "analysis"
+    },
+    "docs/research/01-guizang-design.md": {
+      "sha256": "1b2d7af09c6b7c1e0b81fccd011d13c17c1cf5a144bd39c2306bee751f096acd",
+      "chars": 3505,
+      "bytes": 6974,
+      "kind": "analysis"
+    },
+    "docs/research/02-design-studio.md": {
+      "sha256": "8652fdf9b04e16784478e98fd4ed91695e1eb9999949d959f1ef7732607a4a26",
+      "chars": 3986,
+      "bytes": 8058,
+      "kind": "analysis"
+    },
+    "docs/research/03-media-desk.md": {
+      "sha256": "eae91c82ff457329f96fd0b0187406ce3bae4aec6fb039ebe3972530f066afdd",
+      "chars": 3046,
+      "bytes": 6464,
+      "kind": "analysis"
+    },
+    "docs/research/04-deliverable-editors.md": {
+      "sha256": "69359942069858d330d29b3ee53150979f258fb2a06bef279f458957b11c9ed8",
+      "chars": 3075,
+      "bytes": 6525,
+      "kind": "analysis"
+    },
+    "docs/research/05-DOCKING.md": {
+      "sha256": "7f31a31f50c73dcf5d672f5190b249ae63b2d3df4c82c2b8e858df48bdddf4b6",
+      "chars": 5131,
+      "bytes": 11457,
+      "kind": "analysis"
+    },
+    "docs/research/06-CI与测试框架.md": {
+      "sha256": "90e6db480b698e59078af9fa911565dbd156c4349d38c1a3b242e6bb5db7b107",
+      "chars": 2351,
+      "bytes": 5133,
+      "kind": "analysis"
+    },
+    "docs/research/06-可复用点清单-文件级.md": {
+      "sha256": "3b46ca4d9c5a16b5ec0b2edb33df7bd17cac7e345d7f568b8abe8b2b4729fa1b",
+      "chars": 4230,
+      "bytes": 7378,
+      "kind": "analysis"
+    },
+    "docs/research/07-编辑器模块可行性.md": {
+      "sha256": "b221c8ba796d552753ae44dcd2f3b12957de5358d5e725d931f9ce5a90011760",
+      "chars": 3141,
+      "bytes": 6764,
+      "kind": "analysis"
+    },
+    "docs/research/08-版本管理与重载验证.md": {
+      "sha256": "8f2e27f60e9c062517553d0ae6e71eb7f56abdf0c8e04c21169222e72913e358",
+      "chars": 6416,
+      "bytes": 11271,
+      "kind": "analysis"
+    },
+    "docs/research/09-实现盘点与差距.md": {
+      "sha256": "ff99d4f5ffa062beb1e046ee7f2e8e83e3a37a3d7c93f15e78ef98b2e09f7ccd",
+      "chars": 22736,
+      "bytes": 39061,
+      "kind": "analysis"
+    },
+    "docs/research/10-文档审计与漂移.md": {
+      "sha256": "146283e80dabaf094ddb930c3caca22f47aaae15f52f250160368b23b5917af1",
+      "chars": 25405,
+      "bytes": 44739,
+      "kind": "analysis"
+    },
+    "docs/research/11-CLI与契约草案.md": {
+      "sha256": "df4a08a1912f4098e000cd922864829b7908f8b2702eb110d4a439c8f69aac33",
+      "chars": 14610,
+      "bytes": 27462,
+      "kind": "analysis"
+    },
+    "docs/research/12-子代理冲突检测.md": {
+      "sha256": "5b6ece607789812d3492130cf541aec5865887d201dc9f5de18990490d3dc45b",
+      "chars": 13165,
+      "bytes": 26392,
+      "kind": "analysis"
+    },
+    "docs/research/13-契约决策记录.md": {
+      "sha256": "bd95e6957cb580d6711352ba2fcbfe96493365f9048df51da2beec40c9e83362",
+      "chars": 3157,
+      "bytes": 6001,
+      "kind": "analysis"
+    },
+    "docs/research/README.md": {
+      "sha256": "5660037993419ec90ee2abcdf2849de65d4bb22416c09aa466fec61a422ebdb5",
+      "chars": 1392,
+      "bytes": 2997,
+      "kind": "analysis"
+    },
+    "docs/testing.md": {
+      "sha256": "fcd38a97a77c4b1ea98a56d89d056f53e1973152b933d1e214c5677eef81ebf8",
+      "chars": 1676,
+      "bytes": 2825,
+      "kind": "general"
+    },
+    "docs/规划/00-README.md": {
+      "sha256": "230f79f5a2f5fc25438ef7375361fee26d76a7df751cb2a9681486d0bd45d5c2",
+      "chars": 3012,
+      "bytes": 6304,
+      "kind": "contract"
+    },
+    "docs/规划/01-插件定位.md": {
+      "sha256": "982b210bbaa60f53a3b7c2f176ec0a5b671d40c667939984129c69f73d791826",
+      "chars": 1846,
+      "bytes": 4237,
+      "kind": "contract"
+    },
+    "docs/规划/02-1-线框图与页面布局.md": {
+      "sha256": "d5440f314ba9040872d34239b316bb3ca3c56fda47793af8cf43f14f50a908c3",
+      "chars": 10535,
+      "bytes": 31474,
+      "kind": "contract"
+    },
+    "docs/规划/02-2-架构细化-模块接口与模型调用.md": {
+      "sha256": "d7c58d893c7dc249380a948e4b24e18bbb738ecbea0ec022298e667aae30482f",
+      "chars": 8301,
+      "bytes": 16378,
+      "kind": "contract"
+    },
+    "docs/规划/02-3-前端架构与设计模式.md": {
+      "sha256": "b24c90cef6a56d1e1a425401b14cd9c0982577792f7072e745a5e9833582a2ee",
+      "chars": 4215,
+      "bytes": 7978,
+      "kind": "contract"
+    },
+    "docs/规划/02-架构设计与逻辑与复用.md": {
+      "sha256": "90f180c8c1d107f6c29ff592e8e904e0d7a76aeda6d4aaa6ebdefb59329d7e01",
+      "chars": 4295,
+      "bytes": 8813,
+      "kind": "contract"
+    },
+    "docs/规划/03-1-布局与状态机.md": {
+      "sha256": "13947730e3af9c71d109ef13302b6783871d9a888298cc309f5a914578469da9",
+      "chars": 2141,
+      "bytes": 4478,
+      "kind": "contract"
+    },
+    "docs/规划/03-2-产物模型与数据契约.md": {
+      "sha256": "37dd2e4113fc0b28b81177717e186d4877b28929585620a144635d86b41c50ff",
+      "chars": 3239,
+      "bytes": 5962,
+      "kind": "contract"
+    },
+    "docs/规划/03-3-能力条与技能包装.md": {
+      "sha256": "d34420bdc5a69352bc2b07a5eab23f248ddcd3d254d8dafe3282366c2fcf8a97",
+      "chars": 2374,
+      "bytes": 5152,
+      "kind": "contract"
+    },
+    "docs/规划/03-4-预览与导出.md": {
+      "sha256": "90de1388dcb3764166dc64a1836b7e6ecb919611ac4e681a403f5dec9aed7512",
+      "chars": 2604,
+      "bytes": 4718,
+      "kind": "contract"
+    },
+    "docs/规划/03-5-基础编辑能力.md": {
+      "sha256": "f00b3b96c89ccd64f221c199790fac538f9c2eb0c97489ec8c7e4abf73948a93",
+      "chars": 4968,
+      "bytes": 10530,
+      "kind": "contract"
+    },
+    "docs/规划/03-6-工作台本体设计.md": {
+      "sha256": "7b5d386517f84d9605f0ffaae2bd2381d7a1ce927e8d29e9baa75dcfba618552",
+      "chars": 3788,
+      "bytes": 9774,
+      "kind": "contract"
+    },
+    "docs/规划/03-7-项目、画布与作品管理.md": {
+      "sha256": "f49c19fa93adc12df6647fc7972bb9311d5bdab11d342d96177ef2ac62585ea5",
+      "chars": 3939,
+      "bytes": 8117,
+      "kind": "contract"
+    },
+    "docs/规划/03-工作台设计.md": {
+      "sha256": "69d94b8c193b361407742def36d60dfc86cca6413bb3e1161db37f20a88f6169",
+      "chars": 2655,
+      "bytes": 6938,
+      "kind": "contract"
+    },
+    "docs/规划/04-实施路线图.md": {
+      "sha256": "572ce5d746ab4a5ffbbf80944564c7d91e46b30688c3eeac4a53f21248ca6515",
+      "chars": 5685,
+      "bytes": 11843,
+      "kind": "contract"
+    },
+    "docs/规划/05-测试与验收计划.md": {
+      "sha256": "28a3328c127a356a70f2a1a42f430e56118ed685e6a06acf7751cb5a857ab36a",
+      "chars": 4592,
+      "bytes": 8410,
+      "kind": "contract"
+    }
+  }
+}

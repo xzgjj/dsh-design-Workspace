@@ -1,0 +1,14 @@
+{
+  "id": "2026-11-21-bootstrap-ci",
+  "kinds": ["rules-change", "diff-budget"],
+  "bootstrap": true,
+  "author": "agent",
+  "approvedBy": "user",
+  "approvedAt": "2026-11-21",
+  "expires": "2026-12-31",
+  "reason": "首次引入 CI 与测试骨架：用户在本会话明确要求建立 CI/tests，并同意按“首次引入即基线”落地；record.bootstrap 只在 base 里还没有 ci/policy.json 的引入提交生效。",
+  "limits": {
+    "maxFiles": 100,
+    "maxLines": 8000
+  }
+}

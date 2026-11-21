@@ -1,0 +1,8 @@
+# CI 规则与测试契约：改动必须由规则负责人 review
+/.github/ @xzgjj
+/.githooks/ @xzgjj
+/ci/ @xzgjj
+/scripts/ci/ @xzgjj
+/docs/testing.md @xzgjj
+/AGENTS.md @xzgjj
+/tests/ @xzgjj

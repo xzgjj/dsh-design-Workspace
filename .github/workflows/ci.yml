@@ -1,0 +1,187 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  CI_EVENT: ${{ github.event_name }}
+  CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PR_AUTHOR: ${{ github.event.pull_request.user.login || github.actor }}
+  PR_LABELS: ${{ github.event.pull_request && join(github.event.pull_request.labels.*.name, ',') || '' }}
+
+jobs:
+  contract:
+    name: contract (registry / policy / rules / protected tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: registry
+        run: node scripts/ci/check-registry.mjs
+      - name: policy only tightens
+        run: node scripts/ci/check-policy.mjs
+      - name: rule approval
+        run: node scripts/ci/check-rules.mjs
+      - name: protected tests
+        run: node scripts/ci/check-protected.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-contract
+          path: reports/ci
+          if-no-files-found: ignore
+
+  docs:
+    name: docs (budget / duplication / links)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/check-docs.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-docs
+          path: reports/ci
+          if-no-files-found: ignore
+
+  quality:
+    name: quality (lint / types / complexity / duplication / unused)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/check-lint.mjs
+      - run: node scripts/ci/check-types.mjs
+      - run: node scripts/ci/check-complexity.mjs
+      - run: node scripts/ci/check-duplication.mjs
+      - run: node scripts/ci/check-unused.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-quality
+          path: reports/ci
+          if-no-files-found: ignore
+
+  unit:
+    name: unit (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node scripts/ci/run-tests.mjs --level unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-unit-${{ matrix.node }}
+          path: reports/ci
+          if-no-files-found: ignore
+
+  integration:
+    name: integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/run-tests.mjs --level integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-integration
+          path: reports/ci
+          if-no-files-found: ignore
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/run-tests.mjs --level e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-e2e
+          path: reports/ci
+          if-no-files-found: ignore
+
+  sanitizers:
+    name: sanitizers (asan / ubsan / tsan)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/check-sanitizers.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-sanitizers
+          path: reports/ci
+          if-no-files-found: ignore
+
+  scope:
+    name: scope (whitelist / diff budget)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ci/check-scope.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-scope
+          path: reports/ci
+          if-no-files-found: ignore
+
+  result:
+    name: ci-result
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [contract, docs, quality, unit, integration, e2e, sanitizers, scope]
+    steps:
+      - name: fail if any dependency failed
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

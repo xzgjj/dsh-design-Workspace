@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-11-21T03:40:47.932Z",
+  "files": {
+    "lib/client.js": {
+      "fileLines": 223,
+      "functionLines": 118,
+      "cyclomatic": 18,
+      "depth": 3
+    },
+    "lib/index.js": {
+      "fileLines": 44,
+      "functionLines": 25,
+      "cyclomatic": 10,
+      "depth": 5
+    },
+    "lib/store.js": {
+      "fileLines": 114,
+      "functionLines": 25,
+      "cyclomatic": 11,
+      "depth": 3
+    },
+    "lib/tools.js": {
+      "fileLines": 88,
+      "functionLines": 10,
+      "cyclomatic": 5,
+      "depth": 1
+    }
+  }
+}

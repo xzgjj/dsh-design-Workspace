@@ -1,0 +1,9 @@
+# Git hooks 在 Windows 检出后也必须能被 sh 执行
+.githooks/* text eol=lf
+*.sh text eol=lf
+
+# 代码与 CI 配置固定 LF，避免受保护测试哈希被换行符影响
+*.js text eol=lf
+*.mjs text eol=lf
+*.yml text eol=lf
+docs/testing.md text eol=lf

@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "retry": {
+    "maxAttempts": 1
+  },
+  "docs": {
+    "generalMaxBytes": 20480,
+    "contractMaxChars": 3000,
+    "minDuplicateChars": 40,
+    "contractPatterns": [
+      "**/CLAUDE.md",
+      "**/claude.md",
+      "**/implementation_plan*.md",
+      "**/AGENT_EXECUTION_PROTOCOL.md",
+      "**/SPEC.md",
+      "docs/SPEC-*.md",
+      "**/CLI.md",
+      "**/cli.md",
+      "docs/规划/**/*.md"
+    ],
+    "analysisPatterns": [
+      "docs/research/**/*.md",
+      "**/*调研*.md",
+      "**/*分析*.md",
+      "**/*复盘*.md",
+      "**/*记录*.md"
+    ]
+  },
+  "quality": {
+    "maxFileLines": 400,
+    "maxFunctionLines": 80,
+    "maxCyclomatic": 12,
+    "maxDepth": 5,
+    "duplicationMinBlockLines": 6,
+    "duplicationScope": [
+      "lib/**/*.js"
+    ],
+    "unusedScope": [
+      "lib/**/*.js"
+    ]
+  },
+  "registry": {
+    "metadataTags": [
+      "fast",
+      "slow",
+      "isolated",
+      "shared",
+      "tmpdir",
+      "fake-ctx",
+      "needs-host",
+      "needs-browser",
+      "needs-vm"
+    ],
+    "minRows": {
+      "unit": 1,
+      "integration": 1,
+      "e2e": 0
+    }
+  },
+  "scope": {
+    "allow": [
+      "lib/**",
+      "tests/**",
+      "scripts/ci/**",
+      "ci/**",
+      ".github/**",
+      ".githooks/**",
+      "docs/testing.md",
+      "CI.md",
+      "README.md",
+      "AGENTS.md",
+      "package.json",
+      "cordis.patch.yml",
+      ".gitignore",
+      ".gitattributes"
+    ],
+    "deny": [
+      "assets/**",
+      "reports/**",
+      ".design-work/**",
+      "node_modules/**",
+      "dist/**",
+      "**/*.log",
+      "**/*.tgz"
+    ],
+    "diffBudget": {
+      "maxFiles": 20,
+      "maxLines": 500
+    }
+  },
+  "protected": {
+    "paths": [
+      "tests/**/*.test.mjs"
+    ],
+    "label": "tests-approved"
+  },
+  "rules": {
+    "paths": [
+      "ci/**",
+      "scripts/ci/**",
+      ".github/**",
+      ".githooks/**",
+      "docs/testing.md",
+      "AGENTS.md"
+    ],
+    "label": "ci-rules-approved"
+  },
+  "sanitizers": {
+    "enabled": false,
+    "nativePatterns": [
+      "**/*.c",
+      "**/*.cc",
+      "**/*.cpp",
+      "**/*.cxx",
+      "**/*.h",
+      "**/*.hpp",
+      "**/*.hh",
+      "**/binding.gyp",
+      "**/CMakeLists.txt",
+      "**/Cargo.toml"
+    ],
+    "commands": {
+      "asan": "",
+      "ubsan": "",
+      "tsan": ""
+    }
+  },
+  "_monotonic": {
+    "docs.generalMaxBytes": "down",
+    "docs.contractMaxChars": "down",
+    "docs.minDuplicateChars": "down",
+    "quality.maxFileLines": "down",
+    "quality.maxFunctionLines": "down",
+    "quality.maxCyclomatic": "down",
+    "quality.maxDepth": "down",
+    "quality.duplicationMinBlockLines": "down",
+    "scope.diffBudget.maxFiles": "down",
+    "scope.diffBudget.maxLines": "down",
+    "retry.maxAttempts": "down",
+    "registry.minRows.unit": "up",
+    "registry.minRows.integration": "up",
+    "registry.minRows.e2e": "up",
+    "sanitizers.enabled": "up"
+  }
+}

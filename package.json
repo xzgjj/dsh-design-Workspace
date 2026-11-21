@@ -1,6 +1,6 @@
 {
   "name": "dsh-design-workspace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
   "description": "Design workspace for DeepSeek Harness: one session, one deliverable, one canvas.",
@@ -34,7 +34,12 @@
     "@deepseek-ai/dsh-tools": ">=0.2.1-rc.1 <0.3.0-0"
   },
   "scripts": {
-    "test": "node --test tests/*.test.mjs"
+    "test": "node scripts/ci/run-tests.mjs",
+    "test:unit": "node scripts/ci/run-tests.mjs --level unit",
+    "ci": "node scripts/ci/run-all.mjs",
+    "ci:fast": "node scripts/ci/run-all.mjs --profile fast",
+    "ci:baseline": "node scripts/ci/init-baselines.mjs",
+    "ci:install-hooks": "node scripts/ci/install-hooks.mjs"
   },
   "engines": {
     "node": ">=20"

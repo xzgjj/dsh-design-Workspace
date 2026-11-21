@@ -1,0 +1,10 @@
+{
+  "id": "2026-11-21-design-workspace-panel",
+  "kinds": ["test-change"],
+  "author": "agent",
+  "approvedBy": "user",
+  "approvedAt": "2026-11-21",
+  "expires": "2026-12-31",
+  "paths": ["tests/client.test.mjs"],
+  "reason": "用户要求把「设计工作台」放在左侧栏全局面板列表（sidebar.panellist），点开在 main 面板显示整页工作台。lib/client.js 的 apply 因此新增 sidebar.panellist + main 两个注册，client 测试的 slot 数从 2 更新为 4，并补「入口 id 与 main key 相同」的断言；这不是删测试或放宽断言。"
+}

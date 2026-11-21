@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-11-21T07:02:28.124Z",
+  "missing": [
+    {
+      "file": "docs/规划/03-5-基础编辑能力.md",
+      "target": "assets/05-编辑态.png",
+      "resolved": "docs/规划/assets/05-编辑态.png"
+    },
+    {
+      "file": "docs/规划/03-6-工作台本体设计.md",
+      "target": "assets/06-工作台首页.png",
+      "resolved": "docs/规划/assets/06-工作台首页.png"
+    }
+  ]
+}

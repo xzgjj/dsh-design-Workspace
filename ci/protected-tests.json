@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-11-21T03:46:00.328Z",
+  "note": "修改或删除这里列出的测试需要 test-change 批准",
+  "files": {
+    "tests/ci/ci.test.mjs": "e89279d49e647d324aa4ae1c138b4ef382d987a26892b294c2f75d1fa431a7d6",
+    "tests/client.test.mjs": "d1a7d6547f30db727cf82173ba0e72156f52c02e8211fda02ccff5a12205bd73",
+    "tests/integration/host-api.test.mjs": "4ff5295bff617e8d44a86854d32570f6a9d3f6ed10ffccf5f112438e260e2eab",
+    "tests/store.test.mjs": "e1b846de472b0e533d8f3c7daf750224c195ebacce9123dd7290a73aa0c6ddf0"
+  }
+}

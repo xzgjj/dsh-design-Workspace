@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-11-21T03:40:48.156Z",
+  "allow": {
+    "lib/store.js": [
+      "WORK_FILE",
+      "WORK_MARK"
+    ]
+  }
+}

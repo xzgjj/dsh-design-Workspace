@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-11-21T03:41:04.257Z",
+  "values": {
+    "docs.generalMaxBytes": 20480,
+    "docs.contractMaxChars": 3000,
+    "docs.minDuplicateChars": 40,
+    "quality.maxFileLines": 400,
+    "quality.maxFunctionLines": 80,
+    "quality.maxCyclomatic": 12,
+    "quality.maxDepth": 5,
+    "quality.duplicationMinBlockLines": 6,
+    "scope.diffBudget.maxFiles": 20,
+    "scope.diffBudget.maxLines": 500,
+    "retry.maxAttempts": 1,
+    "registry.minRows.unit": 1,
+    "registry.minRows.integration": 1,
+    "registry.minRows.e2e": 0,
+    "sanitizers.enabled": false
+  }
+}

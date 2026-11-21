@@ -1,0 +1,14 @@
+{
+  "id": "2026-11-21-stage0-docs-baseline",
+  "kinds": ["baseline-relax", "rules-change"],
+  "author": "agent",
+  "approvedBy": "user",
+  "approvedAt": "2026-11-21",
+  "expires": "2026-12-31",
+  "paths": [
+    "ci/baselines/docs.json",
+    "ci/baselines/doc-duplication.json",
+    "ci/baselines/doc-links.json"
+  ],
+  "reason": "阶段 0：规划/SPEC 类文档先于 3000 字预算规则落地，16 篇契约文档在规则引入时即已超限，导致 docs 网关成为唯一红灯。用户在本会话明确同意按仓库机制处理：先冻结现状为基线（不改 policy.json 阈值），再按 docs/research/13-契约决策记录.md §13.3 把文档回改成代码事实，回改后以「只缩不涨」为前提刷新冻结。冻结只是把既有历史债登记为基线，不构成放宽阈值。"
+}
