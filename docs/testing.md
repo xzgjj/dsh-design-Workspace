@@ -4,7 +4,7 @@
 
 ## 原则
 
-- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 9 个单元文件、2 个集成文件；e2e 等宿主运行时接入后再登记。
+- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 10 个单元文件、3 个集成文件；e2e 等宿主运行时接入后再登记。
 - 用例独立、环境可重复：每个用例自建临时目录并清理；不共享可变状态，不依赖执行顺序。
 - 先登记、后写测试：新增、改名、删除测试都必须同步本表。
 
@@ -22,7 +22,9 @@
 | `lib/project.js` | unit | node | `--test tests/project.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/versions.js` | unit | node | `--test tests/versions.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/export.js` | unit | node | `--test tests/export.test.mjs` | `fast, isolated, tmpdir` |
+| `lib/cli*.js` | unit | node | `--test tests/cli.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/index.js` | integration | node | `--test tests/integration/op-api.test.mjs` | `fast, isolated, fake-ctx, tmpdir` |
+| `bin/dshdw.js` | integration | node | `--test tests/integration/cli-bin.test.mjs` | `fast, isolated, tmpdir` |
 
 ## 列含义
 

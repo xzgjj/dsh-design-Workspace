@@ -6,6 +6,9 @@
   "description": "Design workspace for DeepSeek Harness: one session, one deliverable, one canvas.",
   "license": "MIT",
   "main": "lib/index.js",
+  "bin": {
+    "dshdw": "bin/dshdw.js"
+  },
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
@@ -13,6 +16,9 @@
   },
   "files": [
     "lib",
+    "bin",
+    "CLI.md",
+    "CLI-REFERENCE.md",
     "cordis.patch.yml",
     "README.md"
   ],

@@ -16,6 +16,19 @@ dsh plugin --profile desktop add D:\dsh\plugins\dsh-design-workspace
 
 本地开发时也可以直接把这个目录当包挂进 profile（见 `docs/02-INTEGRATION.md`，该文件不进版本库）。
 
+## CLI
+
+本机辅助入口 `dshdw`（npm bin，进程内复用 `dispatch`，不起 HTTP）：
+
+```bash
+npm install -g dsh-design-workspace
+dshdw --version
+dshdw project ensure --title "首屏改版"
+dshdw doctor
+```
+
+命令、参数、profile 链、环境变量、退出码与权限边界见 `CLI.md`；完整示例与插件管理见 `CLI-REFERENCE.md`。
+
 ## 目录
 
 ```
@@ -28,10 +41,16 @@ lib/
   transport.js  scope ↔ 绝对路径、单 op 分发、统一信封
   versions.js   画布级快照 / 列表 / 恢复（≤20）
   export.js     整树导出（S2 扩 html/pdf/png）
+  cli.js        dshdw CLI：13 个子命令 + 14 op 直通
+  cli-config.js 配置链（profile / DSHDW_* / --config）
+  cli-doctor.js 本地环境自检（不入 op 表）
   tools.js      模型工具 5 个
   client.js     浏览器半片：__ModuleLoader__ 包装 + 右栏页签
+bin/dshdw.js    CLI 入口（package.json bin）
+CLI.md          CLI 契约：命令、参数、配置、退出码、权限
+CLI-REFERENCE.md CLI 完整参考：子命令细节、插件管理、可复制示例
 tests/
-  *.test.mjs                  unit：契约 / store / project / artifact / tools / versions / client
+  *.test.mjs                  unit：契约 / store / project / artifact / tools / versions / export / cli / client
   integration/op-api.test.mjs integration：POST /api、scope、信封、asset
   integration/host-api.test.mjs integration：5 工具链路 + 路由
   e2e/README.md               端到端预留（需要宿主运行时）
