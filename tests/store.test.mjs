@@ -1,75 +1,141 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createWork, readState, isWorkFile, workRoot } from '../lib/store.js'
-import { workStartTool, workStateTool } from '../lib/tools.js'
+import { DEFAULT_CANVAS, canvasDir, canvasWorkFile, ensureProject } from '../lib/project.js'
+import {
+  MAX_PAGES,
+  addArtifact,
+  blankWork,
+  canvasDirOf,
+  createCanvasWork,
+  createStore,
+  inferKind,
+  mutateWork,
+  readWork,
+  requireCanvasFile,
+  resolveCanvasRel,
+  stateOf,
+  writeWork,
+} from '../lib/store.js'
 
-function withRoot(fn) {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-design-workspace-'))
+function withProject(fn) {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-store-'))
   try {
-    return fn(root)
+    const { projectFile } = ensureProject({ root, title: '存储测试' })
+    fn({ root, projectFile, canvasFile: canvasWorkFile(projectFile, DEFAULT_CANVAS), canvasPath: canvasDir(projectFile, DEFAULT_CANVAS) })
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
 }
 
-test('isWorkFile 只认 .design-work/work.json', () => {
-  assert.equal(isWorkFile(join('/ws', '.design-work', 'work.json')), true)
-  if (process.platform === 'win32') assert.equal(isWorkFile('C:\\ws\\.design-work\\work.json'), true)
-  assert.equal(isWorkFile('/ws/work.json'), false)
-  assert.equal(isWorkFile('/ws/.design-work/nested/work.json'), false)
-  assert.equal(isWorkFile(''), false)
+test('blankWork 是 v2 形状：status/primary/artifacts/ts', () => {
+  const work = blankWork({ id: 'c-main', kind: 'web', title: '落地页', at: '2026-11-21T00:00:00.000Z' })
+  assert.equal(work.v, 2)
+  assert.equal(work.id, 'c-main')
+  assert.equal(work.kind, 'web')
+  assert.equal(work.status, 'draft')
+  assert.equal(work.primary, null)
+  assert.deepEqual(work.artifacts, [])
+  assert.equal(work.ts.createdAt, '2026-11-21T00:00:00.000Z')
 })
 
-test('createWork 幂等，并返回固定路径', () => {
-  withRoot((root) => {
-    const a = createWork({ root, title: '深色 SaaS 落地页' })
-    assert.equal(a.created, true)
-    assert.equal(workRoot(a.file), root)
-    const b = createWork({ root, title: '另一个标题' })
-    assert.equal(b.created, false)
-    assert.equal(b.work.title, '深色 SaaS 落地页')
+test('createCanvasWork 建 artifacts 目录且幂等', () => {
+  withProject(({ canvasPath, canvasFile }) => {
+    const again = createCanvasWork({ canvasDir: canvasPath, id: DEFAULT_CANVAS, kind: 'web', title: 'x' })
+    assert.equal(again.created, false)
+    assert.equal(again.file, canvasFile)
+    assert.equal(existsSync(join(canvasPath, 'artifacts')), true)
+    assert.equal(canvasDirOf(canvasFile), canvasPath)
   })
 })
 
-test('readState 统计产物并按时间倒序', () => {
-  withRoot((root) => {
-    const { file } = createWork({ root, title: '落地页' })
-    writeFileSync(join(root, 'index.html'), '<html></html>')
-    writeFileSync(join(root, 'deck.pdf'), 'x'.repeat(100))
-    const s = readState(file)
-    assert.equal(s.artifactsCount, 2)
-    assert.equal(s.latest.rel.endsWith('.pdf') || s.latest.rel.endsWith('.html'), true)
-    assert.equal(s.artifacts.find((a) => a.rel === 'index.html').kind, 'web')
-    assert.equal(s.artifacts.find((a) => a.rel === 'deck.pdf').kind, 'deck')
+test('requireCanvasFile 只认 canvases/<id>/work.json，越界形状 NOT_WORK_FILE', () => {
+  withProject(({ root, canvasFile }) => {
+    assert.equal(requireCanvasFile(canvasFile), canvasFile)
+    const outside = join(root, 'work.json')
+    writeFileSync(outside, '{}')
+    assert.throws(() => requireCanvasFile(outside), (err) => err.code === 'BAD_ARGS' && err.reason === 'NOT_WORK_FILE')
+    assert.throws(() => requireCanvasFile(join(root, '.design-work', 'missing', 'work.json')), (err) => err.code === 'BAD_ARGS')
   })
 })
 
-test('readState 拒绝越界路径', () => {
-  withRoot((root) => {
-    createWork({ root, title: 'x' })
-    assert.throws(() => readState(join(root, 'work.json')), /不是合法的交付物文件/)
-    assert.throws(() => readState(join(root, 'nested', '.design-work', 'work.json')), /不存在/)
+test('writeWork 原子且不留 .tmp，mutateWork 回写 ts.updatedAt', () => {
+  withProject(({ canvasFile }) => {
+    const written = writeWork(canvasFile, { ...readWork(canvasFile), title: '新标题' })
+    assert.equal(written.title, '新标题')
+    assert.equal(readdirSync(canvasDirOf(canvasFile)).some((name) => name.includes('.tmp-')), false)
+    const mutated = mutateWork(canvasFile, (work) => ({ ...work, status: 'ready' }))
+    assert.equal(mutated.status, 'ready')
+    assert.notEqual(mutated.ts.updatedAt, '')
   })
 })
 
-test('工具：start → state 串起来', async () => {
-  await withRootAsync(async (root) => {
-    const started = await workStartTool.execute({ root, title: '品牌官网' })
-    assert.equal(started.created, true)
-    const st = await workStateTool.execute({ workFile: started.workFile })
-    assert.equal(st.title, '品牌官网')
-    assert.equal(st.artifactsCount, 0)
+test('resolveCanvasRel 拒绝越界与绝对路径，放行画布内文件', () => {
+  withProject(({ canvasFile, canvasPath }) => {
+    writeFileSync(join(canvasPath, 'index.html'), '<html></html>')
+    assert.equal(resolveCanvasRel(canvasFile, 'index.html'), join(canvasPath, 'index.html'))
+    assert.throws(() => resolveCanvasRel(canvasFile, '../escape.html'), (err) => err.code === 'BAD_ARGS')
+    assert.throws(() => resolveCanvasRel(canvasFile, '/abs.html'), (err) => err.code === 'BAD_ARGS')
   })
 })
 
-async function withRootAsync(fn) {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-design-workspace-'))
-  try {
-    return await fn(root)
-  } finally {
-    rmSync(root, { recursive: true, force: true })
+test('addArtifact 第一件成为 primary，同 rel 覆盖，显式 primary 降级旧件', () => {
+  const work = blankWork({ id: 'c-1', kind: 'web', title: 'x' })
+  addArtifact(work, { rel: 'index.html', kind: 'web', title: '首页', pages: 1 })
+  assert.equal(work.primary, 'index.html')
+  addArtifact(work, { rel: 'index.html', kind: 'web', title: '首页 v2', pages: 2 })
+  assert.equal(work.artifacts.length, 1)
+  assert.equal(work.artifacts[0].title, '首页 v2')
+  addArtifact(work, { rel: 'deck.pdf', kind: 'deck', title: 'PDF', pages: 3, role: 'primary' })
+  assert.equal(work.primary, 'deck.pdf')
+  assert.equal(work.artifacts.find((item) => item.rel === 'index.html').role, 'support')
+  assert.equal(work.artifacts.find((item) => item.rel === 'deck.pdf').role, 'primary')
+})
+
+test('stateOf 只回已存在的登记产物，并渲染 latest/primary', () => {
+  withProject(({ canvasFile, canvasPath }) => {
+    writeFileSync(join(canvasPath, 'index.html'), '<html>ok</html>')
+    writeFileSync(join(canvasPath, 'gone.pdf'), 'x')
+    mutateWork(canvasFile, (work) => {
+      addArtifact(work, { rel: 'index.html', kind: 'web', title: '首页', pages: 1 })
+      addArtifact(work, { rel: 'gone.pdf', kind: 'deck', title: '会消失', pages: 1 })
+      return work
+    })
+    rmSync(join(canvasPath, 'gone.pdf'))
+    const state = stateOf(canvasFile)
+    assert.equal(state.work.v, 2)
+    assert.equal(state.artifactsCount, 1)
+    assert.equal(state.artifacts[0].rel, 'index.html')
+    assert.equal(state.latest.rel, 'index.html')
+    assert.equal(state.primary.rel, 'index.html')
+    assert.equal(state.artifacts[0].bytes > 0, true)
+  })
+})
+
+test('createStore 工厂可注入 clock，写入时间可复现', () => {
+  withProject(({ canvasFile }) => {
+    const fixed = '2026-11-21T00:00:00.000Z'
+    const store = createStore({ clock: () => fixed })
+    const work = store.mutateWork(canvasFile, (current) => ({ ...current, title: '由工厂写入' }))
+    assert.equal(work.ts.updatedAt, fixed)
+    assert.equal(store.readWork(canvasFile).title, '由工厂写入')
+    assert.equal(store.requireCanvasFile(canvasFile), canvasFile)
+  })
+})
+
+test('inferKind 覆盖 web/deck/doc/sheet/image，未知回退 file；pages 上限受约束', () => {
+  assert.equal(inferKind('a.html'), 'web')
+  assert.equal(inferKind('a.pptx'), 'deck')
+  assert.equal(inferKind('a.docx'), 'doc')
+  assert.equal(inferKind('a.xlsx'), 'sheet')
+  assert.equal(inferKind('a.png'), 'image')
+  assert.equal(inferKind('a.bin'), 'file')
+  workWithPages()
+  function workWithPages() {
+    const work = blankWork({ id: 'c-1' })
+    addArtifact(work, { rel: 'x.html', pages: 999 })
+    assert.equal(work.artifacts[0].pages, MAX_PAGES)
   }
-}
+})

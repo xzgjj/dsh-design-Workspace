@@ -1,10 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { apply } from '../../lib/index.js'
-import { createWork } from '../../lib/store.js'
 
 function fakeCtx() {
   const registered = []
@@ -29,26 +28,33 @@ async function call(handler, { url, method = 'GET' }) {
     headers: {},
     body: '',
     setHeader: (key, value) => {
-      res.headers[key] = value
+      res.headers[key.toLowerCase()] = value
     },
     end: (body) => {
-      res.body = body
+      res.body = body || ''
     },
   }
   await handler({ url, method }, res)
   return { status: res.statusCode, headers: res.headers, body: res.body ? JSON.parse(res.body) : null }
 }
 
-test('apply 注册工具与 /design-workspace 路由', () => {
+test('apply 注册 5 个工具与 /design-workspace 前缀路由', () => {
   const ctx = fakeCtx()
   apply(ctx)
-  assert.equal(ctx.registered.length, 2)
+  assert.equal(ctx.registered.length, 5)
+  assert.deepEqual(ctx.registered.map((tool) => tool.name), [
+    'design_work_start',
+    'design_work_add_artifact',
+    'design_work_new_canvas',
+    'design_work_state',
+    'design_work_export',
+  ])
   assert.equal(ctx.servers.length, 1)
   assert.equal(ctx.servers[0].path, '/design-workspace')
   assert.equal(ctx.servers[0].kind, 'prefix')
 })
 
-test('health 返回插件名', async () => {
+test('health 返回插件名与缓存头', async () => {
   const ctx = fakeCtx()
   apply(ctx)
   const res = await call(ctx.servers[0].handler, { url: '/design-workspace/api/health' })
@@ -56,34 +62,45 @@ test('health 返回插件名', async () => {
   assert.equal(res.body.ok, true)
   assert.equal(res.body.plugin, 'design-workspace')
   assert.match(res.headers['content-type'], /application\/json/)
+  assert.equal(res.headers['cache-control'], 'no-store')
 })
 
-test('state 串起 Host API 与 store，并拒绝越界路径', async () => {
+test('工具链路 start → 写产物 → 登记 → state → 导出（不经过 HTTP）', async () => {
   const root = mkdtempSync(join(tmpdir(), 'dsh-host-api-'))
   try {
-    const { file } = createWork({ root, title: '集成测试' })
     const ctx = fakeCtx()
     apply(ctx)
+    const [start, addArtifact, , state, exportTool] = ctx.registered
 
-    const ok = await call(ctx.servers[0].handler, {
-      url: `/design-workspace/api/state?path=${encodeURIComponent(file)}`,
-    })
-    assert.equal(ok.status, 200)
-    assert.equal(ok.body.work.title, '集成测试')
-    assert.equal(ok.body.artifactsCount, 0)
+    const started = await start.execute({ root, title: '集成测试', kind: 'web' })
+    assert.equal(started.created, true)
+    const canvasPath = dirname(started.canvasFile)
+    writeFileSync(join(canvasPath, 'index.html'), '<html><body>host</body></html>')
 
-    const bad = await call(ctx.servers[0].handler, { url: '/design-workspace/api/state?path=/tmp/work.json' })
-    assert.equal(bad.status, 400)
-    assert.equal(bad.body.ok, false)
+    const added = await addArtifact.execute({ canvasFile: started.canvasFile, rel: 'index.html', title: '首页' })
+    assert.equal(added.artifactsCount, 1)
+
+    const st = await state.execute({ canvasFile: started.canvasFile })
+    assert.equal(st.title, '集成测试')
+    assert.equal(st.artifactsCount, 1)
+    assert.equal(st.primary, 'index.html')
+
+    const exported = await exportTool.execute({ canvasFile: started.canvasFile, format: 'html', stamp: 'host' })
+    assert.equal(existsSync(join(exported.dir, 'index.html')), true)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
 })
 
-test('state 只接受 GET', async () => {
+test('旧 /api/state 已下线，只留 POST /api + GET 旁路', async () => {
   const ctx = fakeCtx()
   apply(ctx)
-  const res = await call(ctx.servers[0].handler, { url: '/design-workspace/api/state', method: 'POST' })
-  assert.equal(res.status, 405)
-  assert.equal(res.body.error, 'METHOD_NOT_ALLOWED')
+  const gone = await call(ctx.servers[0].handler, { url: '/design-workspace/api/state?path=/tmp/work.json' })
+  assert.equal(gone.status, 404)
+  assert.equal(gone.body.ok, false)
+  assert.equal(gone.body.code, 'NOT_FOUND')
+
+  const method = await call(ctx.servers[0].handler, { url: '/design-workspace/api/health', method: 'POST' })
+  assert.equal(method.status, 405)
+  assert.equal(method.body.ok, false)
 })

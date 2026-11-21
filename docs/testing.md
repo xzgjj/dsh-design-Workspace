@@ -4,7 +4,7 @@
 
 ## 原则
 
-- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 3 个单元文件、1 个集成文件；e2e 等宿主运行时接入后再登记。
+- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 6 个单元文件、2 个集成文件；e2e 等宿主运行时接入后再登记。
 - 用例独立、环境可重复：每个用例自建临时目录并清理；不共享可变状态，不依赖执行顺序。
 - 先登记、后写测试：新增、改名、删除测试都必须同步本表。
 
@@ -12,7 +12,10 @@
 
 | Scope | Level | Runner | Args | Metadata |
 |---|---|---|---|---|
+| `lib/contracts.js` | unit | node | `--test tests/contracts.test.mjs` | `fast, isolated` |
 | `lib/store.js` | unit | node | `--test tests/store.test.mjs` | `fast, isolated, tmpdir` |
+| `lib/artifact.js` | unit | node | `--test tests/artifact.test.mjs` | `fast, isolated, tmpdir` |
+| `lib/tools.js` | unit | node | `--test tests/tools.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/client.js` | unit | node | `--test tests/client.test.mjs` | `fast, isolated, fake-ctx` |
 | `scripts/ci/**` | unit | node | `--test tests/ci/ci.test.mjs` | `fast, isolated` |
 | `lib/index.js` | integration | node | `--test tests/integration/host-api.test.mjs` | `fast, isolated, fake-ctx, tmpdir` |
