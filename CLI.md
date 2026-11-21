@@ -1,6 +1,6 @@
 # dshdw CLI 契约
 
-本机辅助入口：进程内复用 `dispatch`，不起 HTTP，不新增 op。命令/参数/退出码变更先改本文件。完整参数、示例与插件管理见 [`CLI-REFERENCE.md`](./CLI-REFERENCE.md)。
+本机辅助入口：进程内复用 `transport → dispatch`，不起 HTTP，不新增 op。命令/参数/退出码变更先改本文件。完整参数、示例与插件管理见 [`CLI-REFERENCE.md`](./CLI-REFERENCE.md)。
 
 ## 入口模式
 

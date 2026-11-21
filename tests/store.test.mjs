@@ -58,6 +58,8 @@ test('requireCanvasFile 只认 canvases/<id>/work.json，越界形状 NOT_WORK_F
     writeFileSync(outside, '{}')
     assert.throws(() => requireCanvasFile(outside), (err) => err.code === 'BAD_ARGS' && err.reason === 'NOT_WORK_FILE')
     assert.throws(() => requireCanvasFile(join(root, '.design-work', 'missing', 'work.json')), (err) => err.code === 'BAD_ARGS')
+    assert.throws(() => requireCanvasFile(''), (err) => err.code === 'BAD_ARGS' && err.reason === 'NOT_WORK_FILE')
+    assert.throws(() => requireCanvasFile('canvases/c-main/work.json'), (err) => err.code === 'BAD_ARGS')
   })
 })
 

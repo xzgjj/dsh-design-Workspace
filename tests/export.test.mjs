@@ -124,6 +124,19 @@ test('没有 html 入口时 pdf/png 报 BAD_ARGS，html 仍可导出', async () 
   })
 })
 
+test('primary 决定 html 入口；缺省 stamp 用时间戳目录', async () => {
+  await withCanvas(async ({ canvasFile, canvasPath }) => {
+    writeFileSync(join(canvasPath, 'a.html'), '<html><body>A</body></html>')
+    writeFileSync(join(canvasPath, 'b.html'), '<html><body>B</body></html>')
+    registerArtifact({ canvasFile, rel: 'a.html' })
+    registerArtifact({ canvasFile, rel: 'b.html', primary: true })
+    const run = await exportCanvas({ canvasFile, format: 'html' })
+    assert.equal(run.entry, 'site/b.html')
+    assert.match(run.dir, /export[\\/]c-main[\\/]\d{12}$/)
+    assert.equal(existsSync(join(run.dir, 'manifest.json')), true)
+  })
+})
+
 test('findBrowser：CHROME_PATH 优先，其次常见路径与 PATH；都没有返回空串', () => {
   const linuxNone = findBrowser({ platform: 'linux', env: { PATH: '/usr/bin' }, exists: () => false })
   assert.equal(linuxNone, '')

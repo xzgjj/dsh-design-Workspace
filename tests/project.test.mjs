@@ -44,6 +44,22 @@ test('createProject 工厂可注入 clock，时间戳可复现', () => {
   })
 })
 
+test('同一秒重复归档同一画布 id 时追加序号，不覆盖旧归档', () => {
+  withRoot((root) => {
+    const fixed = '2026-11-21T00:00:00.000Z'
+    const project = createProject({ clock: () => fixed })
+    const ensured = project.ensureProject({ root, title: '归档冲突' })
+    project.createCanvas({ projectFile: ensured.projectFile, title: '临时' })
+    const first = project.removeCanvas({ projectFile: ensured.projectFile, canvasId: 'c-2' })
+    project.createCanvas({ projectFile: ensured.projectFile, title: '临时二' })
+    const second = project.removeCanvas({ projectFile: ensured.projectFile, canvasId: 'c-2' })
+    assert.equal(first.archived.endsWith('archive-20261121-000000'), true)
+    assert.equal(second.archived.endsWith('archive-20261121-000000-2'), true)
+    assert.equal(existsSync(join(designDir(root), first.archived)), true)
+    assert.equal(existsSync(join(designDir(root), second.archived)), true)
+  })
+})
+
 test('ensureProject 建 project.json(v3) 与画布 work.json(v2)，二次进入幂等', () => {
   withRoot((root) => {
     const first = ensureProject({ root, title: '品牌官网', kind: 'web' })

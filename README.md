@@ -18,7 +18,7 @@ dsh plugin --profile desktop add D:\dsh\plugins\dsh-design-workspace
 
 ## CLI
 
-本机辅助入口 `dshdw`（npm bin，进程内复用 `dispatch`，不起 HTTP）：
+本机辅助入口 `dshdw`（npm bin，进程内复用 `transport → dispatch`，不起 HTTP）：
 
 ```bash
 npm install -g dsh-design-workspace

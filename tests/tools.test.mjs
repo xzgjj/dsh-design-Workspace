@@ -30,6 +30,7 @@ test('start → 写文件 → 登记 → state → 新画布 → 导出，整条
     assert.equal(started.created, true)
     assert.equal(started.canvasId, 'c-main')
     assert.equal(existsSync(started.canvasFile), true)
+    assert.match(workStartTool.output.render({}, started)[0].text, /交付物就绪/)
 
     const canvasPath = dirname(started.canvasFile)
     writeFileSync(join(canvasPath, 'index.html'), '<html><body>ok</body></html>')
@@ -38,21 +39,25 @@ test('start → 写文件 → 登记 → state → 新画布 → 导出，整条
     assert.equal(added.rel, 'index.html')
     assert.equal(added.role, 'primary')
     assert.equal(added.artifactsCount, 1)
+    assert.match(addArtifactTool.output.render({}, added)[0].text, /已登记 首页/)
 
     const state = await workStateTool.execute({ canvasFile: started.canvasFile })
     assert.equal(state.title, '品牌官网')
     assert.equal(state.artifactsCount, 1)
     assert.equal(state.latestRel, 'index.html')
     assert.equal(state.primary, 'index.html')
+    assert.match(workStateTool.output.render({}, state)[0].text, /最新 index\.html/)
 
     const canvas = await newCanvasTool.execute({ projectFile: started.projectFile, title: '长文档', kind: 'doc' })
     assert.equal(canvas.canvasId, 'c-2')
     assert.equal(canvas.title, '长文档')
+    assert.match(newCanvasTool.output.render({}, canvas)[0].text, /长文档/)
 
     const exported = await exportTool.execute({ canvasFile: started.canvasFile, format: 'html', stamp: 'tool' })
     assert.equal(exported.format, 'html')
     assert.equal(existsSync(join(exported.dir, 'site', 'index.html')), true)
     assert.equal(exported.fileCount >= 1, true)
+    assert.match(exportTool.output.render({}, exported)[0].text, /已导出 html/)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

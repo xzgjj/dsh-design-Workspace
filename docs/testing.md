@@ -4,7 +4,7 @@
 
 ## 原则
 
-- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 10 个单元文件、3 个集成文件；e2e 等宿主运行时接入后再登记。
+- 测试金字塔：大量快速单元测试，适量集成测试，少量端到端。当前 12 个单元文件、3 个集成文件、1 个 e2e 文件（无浏览器时显式 skip）；e2e 依赖本机 Chrome/Edge。
 - 用例独立、环境可重复：每个用例自建临时目录并清理；不共享可变状态，不依赖执行顺序。
 - 先登记、后写测试：新增、改名、删除测试都必须同步本表。
 
@@ -13,8 +13,10 @@
 | Scope | Level | Runner | Args | Metadata |
 |---|---|---|---|---|
 | `lib/contracts.js` | unit | node | `--test tests/contracts.test.mjs` | `fast, isolated` |
+| `lib/ops.js` | unit | node | `--test tests/ops.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/store.js` | unit | node | `--test tests/store.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/artifact.js` | unit | node | `--test tests/artifact.test.mjs` | `fast, isolated, tmpdir` |
+| `lib/transport.js` | unit | node | `--test tests/transport.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/tools.js` | unit | node | `--test tests/tools.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/client.js` | unit | node | `--test tests/client.test.mjs` | `fast, isolated, fake-ctx` |
 | `scripts/ci/**` | unit | node | `--test tests/ci/ci.test.mjs` | `fast, isolated` |
@@ -25,6 +27,7 @@
 | `lib/cli*.js` | unit | node | `--test tests/cli.test.mjs` | `fast, isolated, tmpdir` |
 | `lib/index.js` | integration | node | `--test tests/integration/op-api.test.mjs` | `fast, isolated, fake-ctx, tmpdir` |
 | `bin/dshdw.js` | integration | node | `--test tests/integration/cli-bin.test.mjs` | `fast, isolated, tmpdir` |
+| `lib/renderer.js` | e2e | node | `--test tests/e2e/render.test.mjs` | `slow, isolated, tmpdir, needs-browser` |
 
 ## 列含义
 
@@ -49,4 +52,4 @@
 
 - 修改或删除受保护测试：需要 `test-change` 批准记录，PR 加 `tests-approved` 标签；批准人不能是作者。
 - 删除文件、把用例改成 skip、改断言，都会触发 `check-protected`；不会因为“让失败消失”而静默通过。
-- e2e 暂为空：等 `tests/e2e` 出现第一个 `*.test.mjs` 时，必须在本表登记，CI 的 e2e 任务会自动接手。
+- e2e：`tests/e2e/render.test.mjs` 需要本机 Chrome/Edge；找不到浏览器时显式 skip，不伪装通过。

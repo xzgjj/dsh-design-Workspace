@@ -1,9 +1,31 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { Readable } from 'node:stream'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { apply } from '../../lib/index.js'
+
+function makeRes() {
+  const res = {
+    statusCode: 0,
+    headers: {},
+    body: '',
+    setHeader: (key, value) => {
+      res.headers[key.toLowerCase()] = value
+    },
+    end: (body) => {
+      res.body = body || ''
+    },
+  }
+  return res
+}
+
+async function send(handler, req) {
+  const res = makeRes()
+  await handler(req, res)
+  return { status: res.statusCode, headers: res.headers, body: res.body ? JSON.parse(res.body) : null }
+}
 
 function fakeCtx() {
   const registered = []
@@ -87,6 +109,34 @@ test('工具链路 start → 写产物 → 登记 → state → 导出（不经�
 
     const exported = await exportTool.execute({ canvasFile: started.canvasFile, format: 'html', stamp: 'host' })
     assert.equal(existsSync(join(exported.dir, 'site', 'index.html')), true)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('POST /api 支持对象/字符串/流式 body；超 1MB 与非 GET/POST 方法拒绝', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-host-body-'))
+  try {
+    const ctx = fakeCtx()
+    apply(ctx)
+    const handler = ctx.servers[0].handler
+    const url = '/design-workspace/api'
+
+    const stringBody = await send(handler, { url, method: 'POST', body: JSON.stringify({ op: 'project.ensure', root }) })
+    assert.equal(stringBody.status, 200)
+    assert.equal(stringBody.body.ok, true)
+
+    const streamed = await send(handler, Object.assign(Readable.from([Buffer.from(JSON.stringify({ op: 'project.ensure', root }))]), { url, method: 'POST' }))
+    assert.equal(streamed.status, 200)
+    assert.equal(streamed.body.created, false)
+
+    const tooLarge = await send(handler, Object.assign(Readable.from([Buffer.alloc(1_000_001)]), { url, method: 'POST' }))
+    assert.equal(tooLarge.status, 400)
+    assert.equal(tooLarge.body.code, 'LIMIT')
+
+    const wrongMethod = await send(handler, { url, method: 'DELETE' })
+    assert.equal(wrongMethod.status, 405)
+    assert.equal(wrongMethod.body.code, 'BAD_ARGS')
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

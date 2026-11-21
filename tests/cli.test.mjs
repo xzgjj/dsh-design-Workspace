@@ -177,6 +177,9 @@ test('profile 链：默认 → profile → 环境变量 → --config → CLI 旗
     assert.equal(fromEnv.config.canvasId, 'c-3')
     assert.equal(fromEnv.config.timeout, 7000)
 
+    const envHuman = loadConfig({ cwd: ws.root, home: ws.home, env: { DSHDW_JSON: '0' } })
+    assert.equal(envHuman.config.output, 'human')
+
     const extra = join(ws.home, 'override.json')
     writeFileSync(extra, JSON.stringify({ canvasId: 'c-4' }))
     const fromFile = loadConfig({ cwd: ws.root, home: ws.home, env: { DSHDW_CANVAS_ID: 'c-3' }, configFile: extra })
@@ -205,6 +208,10 @@ test('配置校验：坏 JSON / 未知字段 / 非法 output 与 timeout 退 2',
     writeFileSync(file, JSON.stringify({ timeout: 0 }))
     const timeout = await cli(['config', 'show', '--json'], ws)
     assert.equal(timeout.code, 2)
+
+    writeFileSync(file, JSON.stringify({ root: '' }))
+    const emptyRoot = await cli(['config', 'show', '--json'], ws)
+    assert.equal(emptyRoot.code, 2)
   } finally { ws.cleanup() }
 })
 
@@ -301,6 +308,66 @@ test('profile 字段非法时 doctor 发现并整体不就绪', () => {
     assert.equal(result.ok, false)
     assert.equal(result.checks.find((check) => check.name === 'profile').ok, false)
     assert.equal(result.checks.find((check) => check.name === 'browser').ok, false)
+  } finally { ws.cleanup() }
+})
+
+test('旗标错误：未知旗标 / 缺值 / 坏 JSON / 超时越界都退 2，-- 终止旗标解析', async () => {
+  const ws = workspace()
+  try {
+    await cli(['project', 'ensure', '--root', ws.root, '--json'], ws)
+    const unknown = await cli(['project', 'inspect', '--nope', '--json'], ws)
+    assert.equal(unknown.code, 2)
+    assert.equal(unknown.json.code, 'BAD_ARGS')
+
+    const missingValue = await cli(['project', 'inspect', '--root', '--json'], ws)
+    assert.equal(missingValue.code, 2)
+
+    const badJson = await cli(['op', 'project.inspect', '--args', '{bad}', '--json'], ws)
+    assert.equal(badJson.code, 2)
+    assert.match(badJson.json.message, /解析失败/)
+
+    const badTimeout = await cli(['project', 'inspect', '--timeout', '0', '--json'], ws)
+    assert.equal(badTimeout.code, 2)
+
+    const afterSeparator = await cli(['project', 'rename', '分隔符', '--json', '--'], ws)
+    assert.equal(afterSeparator.code, 0)
+    assert.equal(afterSeparator.json.data.project.name, '分隔符')
+  } finally { ws.cleanup() }
+})
+
+test('--config 与 --root 的优先级、op 直通内部 op、doctor 人类输出', async () => {
+  const ws = workspace()
+  try {
+    const other = join(ws.root, 'other')
+    mkdirSync(other, { recursive: true })
+    writeProfile(ws.home, { root: ws.root })
+    const extra = join(ws.home, 'override.json')
+    writeFileSync(extra, JSON.stringify({ root: other }))
+
+    const byConfig = await cli(['project', 'ensure', '--config', extra, '--json'], ws)
+    assert.equal(byConfig.code, 0)
+    assert.equal(byConfig.json.data.projectFile.startsWith(other), true)
+
+    const byFlag = await cli(['project', 'ensure', '--root', ws.root, '--json'], ws)
+    assert.equal(byFlag.code, 0)
+    assert.equal(byFlag.json.data.projectFile.startsWith(ws.root), true)
+
+    const read = await cli(['op', 'project.read', '--root', ws.root, '--json'], ws)
+    assert.equal(read.code, 0)
+    assert.equal(read.json.data.project.v, 3)
+    const wire = await cli(['op', 'canvas.wire', '--root', ws.root, '--canvas-id', 'c-main', '--json'], ws)
+    assert.equal(wire.json.data.canvasFile.endsWith('c-main\\work.json') || wire.json.data.canvasFile.endsWith('c-main/work.json'), true)
+
+    const state = await cli(['canvas', 'state'], ws)
+    assert.equal(state.code, 0)
+    assert.match(state.stdout, /画布「/)
+
+    const fakeBrowser = join(ws.root, 'fake-chrome.exe')
+    writeFileSync(fakeBrowser, 'x')
+    const doctor = await cli(['doctor', '--browser', fakeBrowser], { ...ws, doctorDeps: { findBrowser: () => '' } })
+    assert.equal(doctor.code, 0)
+    assert.match(doctor.stdout, /✓ node/)
+    assert.match(doctor.stdout, /✓ browser/)
   } finally { ws.cleanup() }
 })
 

@@ -2,7 +2,7 @@
 
 > 本文件是 `dshdw` 的完整参考：命令、参数、退出码、配置与权限。契约摘要见 [`CLI.md`](./CLI.md)；改命令名、参数或退出码时两份一起改。
 >
-> 定位：本机辅助入口，进程内复用 `lib/ops.js` 的 `dispatch`，不起 HTTP、不新增 op。`doctor` 与 `config show` 是本地命令，不注册路由。
+> 定位：本机辅助入口，进程内复用 `transport → lib/ops.js dispatch`，不起 HTTP、不新增 op。`doctor` 与 `config show` 是本地命令，不注册路由。
 
 ## 1. 入口模式
 
