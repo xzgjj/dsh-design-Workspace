@@ -1,9 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { DEFAULT_CANVAS, canvasWorkFile, ensureProject } from '../lib/project.js'
+import { dirname, join } from 'node:path'
+import { DEFAULT_CANVAS, canvasWorkFile, createCanvas, ensureProject } from '../lib/project.js'
 import { listVersions, restoreCanvas, snapshotCanvas } from '../lib/versions.js'
 import { exportCanvas } from '../lib/export.js'
 
@@ -61,17 +61,43 @@ test('恢复不存在的版本会报 NOT_FOUND', () => {
   })
 })
 
-test('导出把画布内容整树复制并写 manifest', () => {
-  withCanvas(({ canvasFile, root }) => {
+test('空版本恢复 CONFLICT，且跨画布互不影响', () => {
+  withCanvas(({ projectFile, canvasFile }) => {
+    const second = createCanvas({ projectFile, title: '第二块' })
+    const secondFile = canvasWorkFile(projectFile, second.canvas.id)
+    const secondPath = dirname(secondFile)
+    writeFileSync(join(secondPath, 'keep.txt'), '第二块的内容')
+
+    snapshotCanvas({ canvasFile, label: '只存主画布' })
+    assert.equal(listVersions(secondFile).total, 0)
+
+    const design = dirname(dirname(dirname(canvasFile)))
+    const emptyDir = join(design, 'snapshots', DEFAULT_CANVAS, 'v999')
+    mkdirSync(emptyDir, { recursive: true })
+    writeFileSync(join(emptyDir, 'meta.json'), JSON.stringify({ v: 1, id: 'v999', seq: 999, canvasId: DEFAULT_CANVAS, files: [], fileCount: 0 }))
+
+    assert.throws(() => restoreCanvas({ canvasFile, versionId: 'v999' }), (err) => err.code === 'CONFLICT')
+    assert.equal(readFileSync(join(secondPath, 'keep.txt'), 'utf8'), '第二块的内容')
+  })
+})
+
+test('导出把画布内容整树复制并写 manifest', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-versions-export-'))
+  try {
+    const { projectFile } = ensureProject({ root, title: '版本测试' })
+    const canvasFile = canvasWorkFile(projectFile, DEFAULT_CANVAS)
     const folder = canvasFile.replace(/[\\/]work\.json$/, '')
     writeFileSync(join(folder, 'index.html'), '<html></html>')
-    const run = exportCanvas({ canvasFile, stamp: 'test' })
+    const run = await exportCanvas({ canvasFile, stamp: 'test' })
     assert.equal(run.fileCount, 1)
     assert.equal(run.dir.includes(join('export', 'c-main', 'test')), true)
-    assert.equal(readFileSync(join(run.dir, 'index.html'), 'utf8'), '<html></html>')
+    assert.equal(readFileSync(join(run.dir, 'site', 'index.html'), 'utf8'), '<html></html>')
     const manifest = JSON.parse(readFileSync(join(run.dir, 'manifest.json'), 'utf8'))
     assert.equal(manifest.files.length, 1)
     assert.equal(manifest.canvasId, DEFAULT_CANVAS)
+    assert.equal(manifest.format, 'html')
     assert.equal(root.length > 0, true)
-  })
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })

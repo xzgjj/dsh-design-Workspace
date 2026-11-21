@@ -51,7 +51,7 @@ test('start → 写文件 → 登记 → state → 新画布 → 导出，整条
 
     const exported = await exportTool.execute({ canvasFile: started.canvasFile, format: 'html', stamp: 'tool' })
     assert.equal(exported.format, 'html')
-    assert.equal(existsSync(join(exported.dir, 'index.html')), true)
+    assert.equal(existsSync(join(exported.dir, 'site', 'index.html')), true)
     assert.equal(exported.fileCount >= 1, true)
   } finally {
     rmSync(root, { recursive: true, force: true })

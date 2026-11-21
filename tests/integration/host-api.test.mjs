@@ -86,7 +86,7 @@ test('工具链路 start → 写产物 → 登记 → state → 导出（不经�
     assert.equal(st.primary, 'index.html')
 
     const exported = await exportTool.execute({ canvasFile: started.canvasFile, format: 'html', stamp: 'host' })
-    assert.equal(existsSync(join(exported.dir, 'index.html')), true)
+    assert.equal(existsSync(join(exported.dir, 'site', 'index.html')), true)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
