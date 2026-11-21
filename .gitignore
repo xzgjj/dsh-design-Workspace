@@ -1,0 +1,17 @@
+# 本地文档与私有笔记不随包发布，也不进版本库
+docs/
+
+# 依赖与构建产物
+node_modules/
+dist/
+*.tgz
+*.log
+
+# 运行期交付物（跟着用户项目走，不提交到插件仓）
+.design-work/
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

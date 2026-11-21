@@ -1,0 +1,11 @@
+# dsh-design-workspace bundle patch
+#
+# 这个包同时提供 Host 半片（lib/index.js）与浏览器半片（lib/client.js）。
+# `dsh.bundle.patch` 让官方 CLI 安装时自动把本包加进 bundle 栈：
+#
+#   dsh plugin --profile desktop add D:\dsh\plugins\dsh-design-workspace
+#
+# 如果 profile 的 cordis.patch.yml 里已经有同 id 的手工挂载行，先删掉，避免双挂。
+- insert:
+    - id: design-workspace
+      name: 'dsh-design-workspace'
